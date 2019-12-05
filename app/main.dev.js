@@ -10,10 +10,12 @@
  *
  * @flow
  */
-import { app, BrowserWindow, ipcMain, session } from 'electron'
+import { app, BrowserWindow, session } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
+import authModal from './processes/main/authModal'
+import './processes/main/events'
 
 export default class AppUpdater {
   constructor() {
@@ -78,6 +80,9 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
+  // delete cache, commenting this for later use
+  mainWindow.webContents.session.clearStorageData([])
+
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
@@ -88,22 +93,13 @@ app.on('ready', async () => {
       mainWindow.minimize()
     } else {
       mainWindow.show()
+      mainWindow.webContents.closeDevTools()
       mainWindow.focus()
     }
   })
 
-  const clientId = 'Iv1.aa2791eb59403f7d'
-  const url = `https://github.com/login/oauth/authorize?scope=user:email&client_id=${clientId}`
-  const authModal = new BrowserWindow({
-    parent: mainWindow,
-    modal: true,
-    show: false
-  })
-  authModal.loadURL(url)
-
-  ipcMain.on('open-auth', () => {
-    authModal.show()
-  })
+  // function that opens the github auth modal window
+  authModal(mainWindow)
 
   mainWindow.on('closed', () => {
     session.defaultSession.clearCache()
