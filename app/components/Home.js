@@ -1,15 +1,19 @@
 // @flow
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ipcRenderer } from 'electron'
-import { Link } from 'react-router-dom'
-import routes from '../constants/routes'
+import { useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
 import styles from './Home.css'
 
 export default function Home() {
-  useEffect(() => {
-    const token = ipcRenderer.sendSync('get-access-token')
-    console.log(token)
-  }, [])
+  const res = useQuery(gql`
+    query {
+      viewer {
+        login
+      }
+    }
+  `)
+  console.log(res)
 
   const auth = e => {
     e.preventDefault()
