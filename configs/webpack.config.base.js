@@ -2,9 +2,9 @@
  * Base webpack config used across other specific configs
  */
 
-import path from 'path';
-import webpack from 'webpack';
-import { dependencies as externals } from '../app/package.json';
+import path from 'path'
+import webpack from 'webpack'
+import { dependencies as externals } from '../app/package.json'
 
 export default {
   externals: [...Object.keys(externals || {})],
@@ -20,6 +20,11 @@ export default {
             cacheDirectory: true
           }
         }
+      },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
       }
     ]
   },
@@ -34,7 +39,7 @@ export default {
    * Determine the array of extensions that should be used to resolve modules.
    */
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.webpack.js', '.web.js', '.mjs', '.js', '.jsx', '.json'],
     modules: [path.join(__dirname, '..', 'app'), 'node_modules']
   },
 
@@ -45,4 +50,4 @@ export default {
 
     new webpack.NamedModulesPlugin()
   ]
-};
+}
